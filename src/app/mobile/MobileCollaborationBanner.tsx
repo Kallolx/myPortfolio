@@ -2,10 +2,9 @@
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
-import Stack from './Stack';
+import Stack from '../Home/Landing/hero-section/Stack';
 
-
-// Project images for the stack - now with URLs
+// Project images for the stack - reusing the same data
 const projectImages = [
   { 
     id: 1, 
@@ -14,7 +13,7 @@ const projectImages = [
   },
   { 
     id: 2, 
-    img: "/images/brands/2.jpg",
+    img: "/images/brands/1.jpg",
     url: "https://example.com/brand2" 
   },
   { 
@@ -29,34 +28,18 @@ const projectImages = [
   },
   { 
     id: 5, 
-    img: "/images/brands/1.jpg",
+    img: "/images/brands/2.jpg",
     url: "https://example.com/brand5"
   }
 ];
 
-export default function CollaborationBanner() {
+export default function MobileCollaborationBanner() {
   // State for parallax effect and client detection
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [isClient, setIsClient] = useState(false);
   
   useEffect(() => {
     setIsClient(true);
-    
-    // Effect for subtle parallax movement
-    const handleMouseMove = (e: MouseEvent) => {
-      // Get mouse position relative to the window
-      const x = e.clientX / window.innerWidth;
-      const y = e.clientY / window.innerHeight;
-      
-      // Update state with normalized position (0-1)
-      setMousePosition({ x, y });
-    };
-    
-    // Add and remove event listener
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-    };
   }, []);
   
   // Main container animation
@@ -92,57 +75,28 @@ export default function CollaborationBanner() {
 
   return (
     <motion.div 
-      className="relative w-[95%] md:w-[98%] lg:w-[95%] h-full rounded-lg overflow-hidden mx-auto"
+      className="relative w-full h-full rounded-lg overflow-hidden"
       initial="hidden"
       animate={isClient ? "visible" : "hidden"}
       variants={containerVariants}
     >
       {/* Animated Background Image with effects */}
-      <div className="absolute inset-0 z-0 overflow-hidden rounded-lg">
-        {/* Subtle parallax effect based on mouse movement */}
-        <motion.div 
-          className="absolute inset-0 w-[110%] h-[110%] -left-[5%] -top-[5%]"
-          initial={{ scale: 1.05, opacity: 0 }}
-          animate={{
-            x: mousePosition.x * -20,
-            y: mousePosition.y * -20,
-            scale: 1.05,
-            opacity: 1
-          }}
-          transition={{
-            type: "spring",
-            damping: 50,
-            stiffness: 100,
-            opacity: { duration: 1.2 }
-          }}
-        >
-          <Image 
-            src="/images/bannerbg.jpg" 
-            alt="Collaboration Background" 
-            fill 
-            style={{ objectFit: 'cover' }}
-            priority
-            className="brightness-[1.05] filter"
-          />
-        </motion.div>
+      <div className="absolute inset-0 z-0 overflow-hidden">
+        <Image 
+          src="/images/bannerbg.jpg" 
+          alt="Collaboration Background" 
+          fill 
+          style={{ objectFit: 'cover' }}
+          priority
+          className="brightness-[1.05] filter"
+        />
         
         {/* Moving gradient overlay */}
         <motion.div 
           className="absolute inset-0 bg-gradient-to-br from-purple-900/30 to-blue-900/10"
           initial={{ opacity: 0 }}
-          animate={{ 
-            opacity: 1,
-            backgroundPosition: ['0% 0%', '100% 100%'],
-          }}
-          transition={{ 
-            opacity: { duration: 1.5 },
-            backgroundPosition: {
-              duration: 20, 
-              repeat: Infinity, 
-              repeatType: "reverse",
-              ease: "linear"
-            }
-          }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1.5 }}
         />
         
         {/* Subtle pulse effect */}
@@ -159,36 +113,36 @@ export default function CollaborationBanner() {
         />
       </div>
       
-      {/* Content Container - Modified to horizontal layout */}
+      {/* Content Container - Vertical layout for mobile */}
       <motion.div 
-        className="relative z-10 flex flex-row justify-between h-full w-full p-6 md:p-8"
+        className="relative z-10 flex flex-col h-full w-full p-4"
         variants={itemVariants}
       >
-        {/* Left section with text content */}
+        {/* Top section with text content */}
         <motion.div 
-          className="space-y-4 w-1/2 pr-4"
+          className="space-y-3 mb-4 flex flex-col items-center text-center"
           variants={itemVariants}
         >
           {/* Collaborations Tag */}
           <motion.div 
-            className="inline-block px-4 py-1.5 text-white border border-white text-sm font-medium rounded-full backdrop-blur-sm"
+            className="inline-block px-3 py-1 text-white border border-white text-xs font-medium rounded-full backdrop-blur-sm"
             variants={itemVariants}
           >
             Collaborations
           </motion.div>
           
-          {/* Title - Updated styling - reduced text size */}
+          {/* Title - Updated styling */}
           <motion.h2 
-            className="text-xl md:text-2xl lg:text-3xl font-medium text-white leading-tight -tracking-[0.06em]"
+            className="text-lg font-medium text-white leading-tight -tracking-[0.06em] max-w-[280px]"
             variants={itemVariants}
           >
-           Collaborated with leading brands, bring bold ideas to life
+            Collaborated with leading brands to bring bold ideas to life
           </motion.h2>
         </motion.div>
 
-        {/* Right section with Stack component */}
+        {/* Bottom section with Stack component */}
         <motion.div 
-          className="w-1/2 flex items-center justify-center"
+          className="w-full flex-1 flex items-center justify-center scale-110 transform"
           variants={itemVariants}
         >
           <motion.div
@@ -198,7 +152,7 @@ export default function CollaborationBanner() {
               randomRotation={true}
               sensitivity={180}
               sendToBackOnClick={true}
-              cardDimensions={{ width: 180, height: 180 }}
+              cardDimensions={{ width: 160, height: 160 }}
               cardsData={projectImages}
               animationConfig={{ stiffness: 280, damping: 20 }}
             />

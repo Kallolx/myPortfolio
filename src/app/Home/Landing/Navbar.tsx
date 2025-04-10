@@ -1,13 +1,19 @@
 'use client'
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import { RainbowButton } from '@/ui/rainbow-button';
 import { ShimmerButton } from '@/ui/shimmer-button';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import Script from 'next/script';
+import { MenuOverlay } from '@/ui/menu-overlay';
+import Link from 'next/link';
 
 export default function Navbar() {
   const [isClient, setIsClient] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [menuTriggerPosition, setMenuTriggerPosition] = useState<{ x: number; y: number } | null>(null);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
+  const menuIconRef = useRef<HTMLImageElement>(null);
   const { scrollY } = useScroll();
   
   // Transform values for scroll effects
@@ -32,6 +38,17 @@ export default function Navbar() {
   useEffect(() => {
     setIsClient(true);
   }, []);
+
+  const handleMenuToggle = () => {
+    if (!isMenuOpen && menuButtonRef.current) {
+      const rect = menuButtonRef.current.getBoundingClientRect();
+      setMenuTriggerPosition({
+        x: rect.left + rect.width / 2,
+        y: rect.top + rect.height / 2
+      });
+    }
+    setIsMenuOpen(!isMenuOpen);
+  };
   
   const navVariants = {
     hidden: { opacity: 0, y: -20 },
@@ -80,6 +97,13 @@ export default function Navbar() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       
+      {/* Menu Overlay */}
+      <MenuOverlay 
+        isOpen={isMenuOpen} 
+        onClose={() => setIsMenuOpen(false)} 
+        triggerPosition={menuTriggerPosition}
+      />
+      
       <motion.nav 
         className="fixed top-0 left-0 right-0 z-50 py-6 flex items-center justify-center font-dm-sans"
         initial="hidden"
@@ -96,20 +120,21 @@ export default function Navbar() {
             className="flex items-center"
             variants={itemVariants}
           >
-            <div className="flex items-center">
+            <Link href="/" className="flex items-center">
               <Image 
                 src="/icons/Logo.svg"
                 alt="Kallolsfolio Logo"
                 width={150}
                 height={50}
-                className="h-auto w-auto"
+                className="h-auto w-auto md:w-auto sm:w-[120px]"
                 priority
               />
-            </div>
+            </Link>
           </motion.div>
           
           <div className="flex items-center gap-6">
-            <motion.div variants={itemVariants}>
+            {/* Only visible on medium and larger screens */}
+            <motion.div variants={itemVariants} className="hidden md:block">
               <RainbowButton 
                 className="flex items-center gap-2"
                 href="https://github.com/kallolx"
@@ -119,7 +144,7 @@ export default function Navbar() {
               </RainbowButton>
             </motion.div>
             
-            <motion.div variants={itemVariants}>
+            <motion.div variants={itemVariants} className="hidden md:block">
               <ShimmerButton 
                 shimmerColor="#997ef1"
                 background="#090245"
@@ -142,12 +167,15 @@ export default function Navbar() {
               className="p-2"
               variants={itemVariants}
               aria-label="Open Menu"
+              onClick={handleMenuToggle}
+              ref={menuButtonRef}
             >
               <Image 
                 src="/icons/menubar.svg"
                 alt="Menu"
                 width={40}
                 height={40}
+                ref={menuIconRef}
               />
             </motion.button>
           </div>

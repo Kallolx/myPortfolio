@@ -1,9 +1,10 @@
+'use client'
 import React, { useState, useEffect, useRef } from 'react';
 import AuroraText from '@/ui/AuroraText';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 
-// Section data
+// Section data - matching desktop version
 const sectionsData = [
   {
     id: 'expertise',
@@ -46,7 +47,7 @@ const sectionsData = [
       {
         id: 'interests',
         icon: '/icons/about/cup.svg',
-        description: 'Code doesn’t compile \nuntil I’ve had a cup.'
+        description: "Code doesn't compile \nuntil I've had a cup."
       }
     ]
   },
@@ -73,7 +74,7 @@ const sectionsData = [
   }
 ];
 
-export default function HeroAbout() {
+export default function MobileHeroAbout() {
   const [activeSection, setActiveSection] = useState(0); // Start with Expertise section
   const [activeItemIndex, setActiveItemIndex] = useState(1); // Start with middle item
   const [isClient, setIsClient] = useState(false);
@@ -87,7 +88,10 @@ export default function HeroAbout() {
     // Auto-rotate the items within a section every 3 seconds
     if (!isAutoRotationPaused) {
       intervalRef.current = setInterval(() => {
-        setActiveItemIndex((prev) => (prev + 1) % sectionsData[activeSection].items.length);
+        setActiveItemIndex(prev => {
+          const nextIndex = (prev + 1) % sectionsData[activeSection].items.length;
+          return nextIndex;
+        });
       }, 3000);
     }
 
@@ -99,8 +103,8 @@ export default function HeroAbout() {
     };
   }, [activeSection, isAutoRotationPaused]);
 
-  // Pause auto-rotation when user hovers over the content
-  const handleMouseEnter = () => {
+  // Pause auto-rotation when user touches/interacts with the content
+  const handleTouchStart = () => {
     setIsAutoRotationPaused(true);
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
@@ -108,15 +112,14 @@ export default function HeroAbout() {
     }
   };
 
-  // Resume auto-rotation when user leaves
-  const handleMouseLeave = () => {
+  // Resume auto-rotation when user stops touching
+  const handleTouchEnd = () => {
     setIsAutoRotationPaused(false);
   };
 
-  // Allow user to click on an icon to make it active
+  // Allow user to click/tap on an icon to make it active
   const handleIconClick = (index: number) => {
     // Calculate the position index relative to the current active index
-    const positions = [-1, 0, 1]; // left, center, right
     const positionedItems = getPositionedItems();
     const clickedItem = positionedItems.find((_, i) => i === index);
     
@@ -219,11 +222,7 @@ export default function HeroAbout() {
     <div className="h-full w-full relative overflow-hidden">
       {/* Card background with its own animation */}
       <motion.div 
-        className="absolute inset-0 w-full h-full overflow-hidden"
-        style={{
-          borderTopLeftRadius: '50px',
-          borderBottomRightRadius: '50px',
-        }}
+        className="absolute inset-0 w-full h-full rounded-[30px] overflow-hidden"
         initial="hidden"
         animate={isClient ? "visible" : "hidden"}
         variants={cardVariants}
@@ -231,10 +230,8 @@ export default function HeroAbout() {
       
       {/* Border overlay with separate animation */}
       <motion.div
-        className="absolute inset-0 w-full h-full border border-white/10 overflow-hidden"
+        className="absolute inset-0 w-full h-full border border-white/10 rounded-[30px] overflow-hidden"
         style={{
-          borderTopLeftRadius: '50px',
-          borderBottomRightRadius: '50px',
           boxShadow: '0 4px 30px rgba(0, 0, 0, 0.1)',
         }}
         initial={{ opacity: 0 }}
@@ -244,34 +241,33 @@ export default function HeroAbout() {
       
       {/* Content with staggered animation */}
       <motion.div 
-        className="relative h-full w-full py-8 px-6 flex flex-col justify-center z-10 overflow-hidden"
+        className="relative h-full w-full py-6 px-4 flex flex-col justify-center z-10 overflow-hidden"
         initial="hidden"
         animate={isClient ? "visible" : "hidden"}
         variants={containerVariants}
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
       >
         {/* Title with arrows */}
         <motion.div 
-          className="flex items-center justify-center mb-8 gap-4"
+          className="flex items-center justify-center mb-6 gap-4"
           variants={itemVariants}
         >
           <motion.div 
             className="cursor-pointer" 
             onClick={handlePrev}
-            whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
           >
             <Image 
               src="/icons/arrow.svg" 
               alt="Left arrow" 
-              width={24} 
-              height={24} 
+              width={20} 
+              height={20} 
               className="opacity-50 rotate-180" 
             />
           </motion.div>
           
-          <div className="overflow-hidden w-56 flex justify-center">
+          <div className="overflow-hidden w-44 flex justify-center">
             <AnimatePresence mode="wait" custom={direction}>
               <motion.div
                 key={sectionsData[activeSection].id}
@@ -285,7 +281,7 @@ export default function HeroAbout() {
                   opacity: { duration: 0.2 }
                 }}
               >
-                <AuroraText className="text-4xl font-medium whitespace-nowrap">
+                <AuroraText className="text-3xl font-medium whitespace-nowrap">
                   {sectionsData[activeSection].title}
                 </AuroraText>
               </motion.div>
@@ -295,14 +291,13 @@ export default function HeroAbout() {
           <motion.div 
             className="cursor-pointer" 
             onClick={handleNext}
-            whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
           >
             <Image 
               src="/icons/arrow.svg" 
               alt="Right arrow" 
-              width={24} 
-              height={24} 
+              width={20} 
+              height={20} 
               className="opacity-50" 
             />
           </motion.div>
@@ -326,10 +321,10 @@ export default function HeroAbout() {
             >
               {/* Section icons */}
               <motion.div 
-                className="relative h-32 mb-4 mt-2"
+                className="relative h-28 mb-3 mt-1"
                 variants={itemVariants}
               >
-                <div className="flex justify-center items-center gap-6 absolute w-full top-1/2 -translate-y-1/2">
+                <div className="flex justify-center items-center gap-4 absolute w-full top-1/2 -translate-y-1/2">
                   <AnimatePresence mode="popLayout">
                     {getPositionedItems().map((item, index) => (
                       <motion.div
@@ -360,15 +355,15 @@ export default function HeroAbout() {
                         <div 
                           className={`rounded-full flex items-center justify-center cursor-pointer transition-all duration-300 ${
                             item.position === 'center' 
-                              ? 'bg-white shadow-lg h-28 w-28' 
-                              : 'bg-[#54117F] hover:bg-[#6b1ca0] h-20 w-20'
+                              ? 'bg-white shadow-lg h-24 w-24' 
+                              : 'bg-[#54117F] hover:bg-[#6b1ca0] active:bg-[#6b1ca0] h-16 w-16'
                           }`}
                         >
                           <Image 
                             src={item.icon}
                             alt={item.id}
-                            width={item.position === 'center' ? 56 : 38}
-                            height={item.position === 'center' ? 56 : 38}
+                            width={item.position === 'center' ? 48 : 32}
+                            height={item.position === 'center' ? 48 : 32}
                             className="object-contain"
                           />
                         </div>
@@ -383,9 +378,9 @@ export default function HeroAbout() {
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  className="absolute top-4 right-4 bg-[#54117F] bg-opacity-80 rounded-full p-1.5"
+                  className="absolute top-3 right-3 bg-[#54117F] bg-opacity-80 rounded-full p-1"
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                 </motion.div>
@@ -393,7 +388,7 @@ export default function HeroAbout() {
 
               {/* Section description */}
               <motion.div 
-                className="text-center px-4 min-h-[100px] flex items-center justify-center overflow-hidden"
+                className="text-center px-2 min-h-[90px] flex items-center justify-center overflow-hidden"
                 variants={itemVariants}
               >
                 <AnimatePresence mode="wait">
@@ -405,7 +400,7 @@ export default function HeroAbout() {
                     transition={{ duration: 0.3 }}
                     className="w-full"
                   >
-                    <p className="text-white text-xl md:text-2xl mx-auto max-w-2xl font-normal -tracking-[0.04em] leading-tight whitespace-pre-line">
+                    <p className="text-white text-lg md:text-xl mx-auto max-w-2xl font-normal -tracking-[0.04em] leading-tight whitespace-pre-line">
                       {sectionsData[activeSection].items[activeItemIndex].description}
                     </p>
                   </motion.div>

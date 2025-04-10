@@ -7,7 +7,7 @@ import AboutButton from './AboutButton';
 
 export default function HeroTop() {
   return (
-    <div className="w-full h-full flex flex-col md:flex-row md:gap-6 lg:gap-8 relative">
+    <div className="w-full h-full flex flex-col md:flex-row md:gap-6 lg:gap-8 relative -ml-8">
       {/* Left Section - Title (40%) */}
       <div className="w-full md:w-[45%] py-8 md:py-0 flex items-center">
         <HeroTitle />

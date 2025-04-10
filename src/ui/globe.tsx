@@ -114,7 +114,7 @@ export function Globe({
       <div className="w-full h-full flex items-center justify-center">
         <canvas
           className={cn(
-            "w-[400%] h-[400%] max-w-none opacity-0 transition-opacity duration-300 -translate-x-[10%] translate-y-[20%]"
+            "w-[300%] h-[300%] max-w-none opacity-0 transition-opacity duration-300 -translate-x-[25%] translate-y-[10%]"
           )}
           ref={canvasRef}
           onPointerDown={(e) => {
