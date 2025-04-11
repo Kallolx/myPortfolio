@@ -1,6 +1,8 @@
 import React from 'react';
 import Navbar from './Landing/Navbar';
 import Hero from './Landing/Hero';
+import SplineModel from './Landing/SplineModel';
+import ProjectsSection from './Landing/ProjectsSection';
 
 export default function HomePage() {
   return (
@@ -41,7 +43,9 @@ export default function HomePage() {
         <div className="relative flex flex-col min-h-screen max-w-[1440px] mx-auto w-full">
           <Navbar />
           <main className="flex-1 flex flex-col">
-            <Hero />           
+            <Hero />
+            <SplineModel />
+            <ProjectsSection />
           </main>
         </div>
       </div>

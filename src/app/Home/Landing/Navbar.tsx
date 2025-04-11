@@ -20,7 +20,7 @@ export default function Navbar() {
   const backgroundColor = useTransform(
     scrollY,
     [0, 100],
-    ['rgba(0, 0, 0, 0)', 'rgba(9, 2, 69, 0.85)']
+    ['rgba(0, 0, 0, 0)', 'rgba(9, 2, 69, 0.10)']
   );
   
   const backdropBlur = useTransform(
@@ -81,9 +81,9 @@ export default function Navbar() {
     "url": "https://kallolsfolio.com",
     "logo": "https://kallolsfolio.com/Logo.svg",
     "sameAs": [
-      "https://twitter.com/kallolsfolio",
+      "https://twitter.com/kallolx",
       "https://linkedin.com/company/kallolsfolio",
-      "https://github.com/kallolsfolio"
+      "https://github.com/kallolx"
     ],
     "description": "Connecting top tech talent with innovative projects worldwide"
   };

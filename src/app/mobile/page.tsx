@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Navbar from '../Home/Landing/Navbar';
 import MobileHero from './MobileHero';
-
+import MobileProjectsSection from './MobileProjectsSection';
 
 export default function MobileHomePage() {
   const router = useRouter();
@@ -49,6 +49,7 @@ export default function MobileHomePage() {
           <Navbar />
           <main className="flex-1 flex flex-col mt-6">
             <MobileHero />
+            <MobileProjectsSection />
           </main>
         </div>
       </div>
