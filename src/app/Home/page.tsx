@@ -44,7 +44,7 @@ export default function HomePage() {
           <Navbar />
           <main className="flex-1 flex flex-col">
             <Hero />
-            <SplineModel />
+           {/* <SplineModel /> */}
             <ProjectsSection />
           </main>
         </div>

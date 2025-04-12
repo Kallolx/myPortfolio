@@ -1,8 +1,9 @@
 'use client'
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import Image from 'next/image'
 import Link from 'next/link'
+import MobileMenu from './mobile-menu'
 
 interface MenuOverlayProps {
   isOpen: boolean
@@ -10,11 +11,36 @@ interface MenuOverlayProps {
   triggerPosition: { x: number; y: number } | null
 }
 
+const menuItems = [
+  { id: 1, title: 'My Works', link: '/works', image: '/images/nav/1.jpg', overlayOpacity: '0.6' },
+  { id: 2, title: 'Skills', link: '/skills', image: '/images/nav/2.jpg', overlayOpacity: '0.65' },
+  { id: 3, title: 'Service', link: '/service', image: '/images/nav/3.jpg', overlayOpacity: '0.6' },
+  { id: 4, title: 'Contact', link: '/contact', image: '/images/nav/4.jpg', overlayOpacity: '0.7' },
+]
+
 export const MenuOverlay: React.FC<MenuOverlayProps> = ({
   isOpen,
   onClose,
   triggerPosition,
 }) => {
+  const [activeIndex, setActiveIndex] = useState(0)
+  const [isAnimating, setIsAnimating] = useState(false)
+  const [isMobile, setIsMobile] = useState(false)
+
+  // Check if mobile device on mount and on resize
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768)
+    }
+    
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    
+    return () => {
+      window.removeEventListener('resize', checkMobile)
+    }
+  }, [])
+
   const menuVariants = {
     hidden: {
       clipPath: triggerPosition 
@@ -34,7 +60,7 @@ export const MenuOverlay: React.FC<MenuOverlayProps> = ({
         ease: [0.4, 0, 0.2, 1],
       },
     },
-  };
+  }
 
   const contentVariants = {
     hidden: {
@@ -50,22 +76,125 @@ export const MenuOverlay: React.FC<MenuOverlayProps> = ({
         duration: 0.3,
       },
     },
-  };
+  }
 
-  // For future mobile menu items
-  const mobileMenuItemVariants = {
-    hidden: { opacity: 0, x: -20 },
-    visible: (i: number) => ({
+  const imageVariants = {
+    initial: {
+      opacity: 0,
+      scale: 1.1,
+    },
+    animate: {
       opacity: 1,
-      x: 0,
+      scale: 1,
       transition: {
-        delay: 0.7 + i * 0.1,
-        duration: 0.3,
+        duration: 0.7,
         ease: [0.4, 0, 0.2, 1],
       },
-    }),
-  };
+    },
+    exit: {
+      opacity: 0,
+      scale: 1.1,
+      transition: {
+        duration: 0.3,
+      },
+    },
+  }
 
+  const textVariants = {
+    initial: {
+      opacity: 0,
+      y: 30,
+    },
+    animate: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        delay: 0.5,
+        duration: 0.5,
+        ease: [0.4, 0, 0.2, 1],
+      },
+    },
+    exit: {
+      opacity: 0,
+      y: -30,
+      transition: {
+        duration: 0.3,
+      },
+    },
+  }
+
+  // Animation for the scroll down text
+  const scrollDownVariants = {
+    initial: {
+      opacity: 0,
+      y: -15
+    },
+    animate: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.4,
+        ease: "easeOut"
+      }
+    },
+    exit: {
+      opacity: 0,
+      y: 15,
+      transition: {
+        duration: 0.2
+      }
+    }
+  }
+
+  const handleScroll = (e: React.WheelEvent) => {
+    if (isAnimating) return
+
+    setIsAnimating(true)
+    if (e.deltaY > 0) {
+      setActiveIndex((prev) => (prev === menuItems.length - 1 ? 0 : prev + 1))
+    } else {
+      setActiveIndex((prev) => (prev === 0 ? menuItems.length - 1 : prev - 1))
+    }
+    
+    setTimeout(() => setIsAnimating(false), 800)
+  }
+
+  const getItemStyles = (index: number) => {
+    const position = index - activeIndex
+    const totalItems = menuItems.length
+
+    // Adjust position for infinite scroll
+    let adjustedPosition = position
+    if (position > totalItems / 2) adjustedPosition = position - totalItems
+    if (position < -totalItems / 2) adjustedPosition = position + totalItems
+
+    const isActive = adjustedPosition === 0
+    const yOffset = adjustedPosition * 120
+
+    // Only show active item and the ones directly above and below it
+    const isVisible = Math.abs(adjustedPosition) <= 1
+    
+    return {
+      y: yOffset,
+      scale: isActive ? 1 : 0.5,
+      opacity: isVisible ? (isActive ? 1 : 0.15) : 0, // Hide items that aren't adjacent to active
+      fontSize: isActive ? '10vw' : '6vw',
+      color: isActive ? '#ffffff' : '#888888',
+      // Using style prop instead to handle pointer-events
+      transition: {
+        duration: 0.8,
+        ease: [0.16, 1, 0.3, 1],
+        opacity: { duration: 0.4 },
+      }
+    }
+  }
+
+  // If on mobile, render the mobile menu
+  if (isMobile) {
+    return <MobileMenu isOpen={isOpen} onClose={onClose} triggerPosition={triggerPosition} />
+  }
+
+  // Otherwise, render the desktop menu
   return (
     <AnimatePresence>
       {isOpen && (
@@ -109,56 +238,103 @@ export const MenuOverlay: React.FC<MenuOverlayProps> = ({
             </button>
           </motion.div>
 
-          {/* Mobile Navigation Content - only visible on smaller screens */}
+          {/* Background Images - One for each menu item */}
+          <AnimatePresence mode="wait">
+            {menuItems.map((item, index) => (
+              index === activeIndex && (
+                <motion.div
+                  key={`bg-${item.id}`}
+                  variants={imageVariants}
+                  initial="initial"
+                  animate="animate"
+                  exit="exit"
+                  className="absolute inset-0 w-full h-full"
+                >
+                  <Image
+                    src={item.image}
+                    alt={`${item.title} Background`}
+                    fill
+                    className="object-cover"
+                    priority
+                  />
+                  <div 
+                    className="absolute inset-0 bg-black" 
+                    style={{ opacity: item.overlayOpacity }}
+                  />
+                </motion.div>
+              )
+            ))}
+          </AnimatePresence>
+
+          {/* Menu Items Container */}
           <motion.div
             variants={contentVariants}
-            className="md:hidden flex flex-col justify-center items-center h-full w-full px-8"
+            className="h-full w-full overflow-hidden"
+            onWheel={handleScroll}
           >
-            {/* This is where full menu content will go later */}
-            <div className="w-full max-w-sm flex flex-col gap-6 mt-16">
-              <motion.div
-                custom={0}
-                variants={mobileMenuItemVariants}
-                initial="hidden"
-                animate="visible"
-                className="w-full"
-              >
-                <Link 
-                  href="https://github.com/kallolx"
-                  className="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white py-4 px-6 rounded-full flex items-center justify-center gap-2 hover:opacity-90 transition-opacity"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={onClose}
+            {/* Scroll Down Text - Now at top */}
+            <div className="absolute top-12 left-0 right-0 flex justify-center items-center">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={`scroll-${activeIndex}`}
+                  initial="initial"
+                  animate="animate"
+                  exit="exit"
+                  variants={scrollDownVariants}
+                  className="flex flex-col items-center"
                 >
-                  <span>⭐ Star on Github</span>
-                </Link>
-              </motion.div>
-              
-              <motion.div
-                custom={1}
-                variants={mobileMenuItemVariants}
-                initial="hidden"
-                animate="visible"
-                className="w-full"
-              >
-                <Link 
-                  href="https://wa.me/8801831624571"
-                  className="w-full bg-[#090245] text-white py-4 px-6 rounded-full flex items-center justify-center gap-2 hover:opacity-90 transition-opacity relative overflow-hidden group"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={onClose}
-                >
-                  <span className="relative z-10">Connect Now</span>
-                  <Image 
-                    src="/icons/arrow.svg"
-                    alt="Arrow Icon"
-                    width={20}
-                    height={20}
-                    className="relative z-10"
-                  />
-                  <div className="absolute inset-0 bg-[#997ef1] opacity-30 group-hover:opacity-50 transition-opacity"></div>
-                </Link>
-              </motion.div>
+                  <motion.div
+                    animate={{ y: [0, 8, 0] }}
+                    transition={{ 
+                      repeat: Infinity, 
+                      duration: 1.5, 
+                      ease: "easeInOut" 
+                    }}
+                    className="mb-2"
+                  >
+                    <svg 
+                      width="24" 
+                      height="24" 
+                      viewBox="0 0 24 24" 
+                      fill="none" 
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="text-white/70"
+                    >
+                      <path 
+                        d="M12 5V19M12 19L19 12M12 19L5 12" 
+                        stroke="currentColor" 
+                        strokeWidth="2" 
+                        strokeLinecap="round" 
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  </motion.div>
+                  <p className="text-white/70 uppercase tracking-widest text-sm">Scroll Down</p>
+                </motion.div>
+              </AnimatePresence>
+            </div>
+
+            <div className="relative h-full w-full flex items-center justify-center">
+              <div className="relative h-screen flex items-center">
+                {menuItems.map((item, index) => (
+                  <motion.div
+                    key={item.id}
+                    initial={false}
+                    animate={getItemStyles(index)}
+                    className="absolute left-1/2 -translate-x-1/2"
+                    style={{ 
+                      transformOrigin: 'center center',
+                      pointerEvents: Math.abs(index - activeIndex) <= 1 ? 'auto' : 'none'
+                    }}
+                  >
+                    <Link href={item.link} className="block">
+                      <h2 className="font-dm-sans font-medium tracking-[-0.06em] hover:opacity-80 transition-opacity whitespace-nowrap">
+                        {item.title}
+                      </h2>
+                    </Link>
+                  </motion.div>
+                ))}
+              </div>
             </div>
           </motion.div>
         </motion.div>

@@ -33,6 +33,7 @@ export default function HeroImage() {
             }}
           >
             <Image
+              loading="lazy"
               src={imgSrc}
               alt="Professional Portrait"
               fill
@@ -41,7 +42,7 @@ export default function HeroImage() {
                 objectFit: 'cover',
                 objectPosition: 'center'
               }}
-              priority
+              
             />
           </div>
         </motion.div>
@@ -55,6 +56,7 @@ export default function HeroImage() {
             }}
           >
             <Image
+              loading="lazy"
               src={imgSrc}
               alt="Professional Portrait"
               fill
@@ -63,7 +65,7 @@ export default function HeroImage() {
                 objectFit: 'cover',
                 objectPosition: 'center'
               }}
-              priority
+              
               onError={() => {
                 setImgSrc('https://via.placeholder.com/300x400?text=Your+Image+Here');
               }}

@@ -1,8 +1,6 @@
 'use client'
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Navbar from './Home/Landing/Navbar';
-import Hero from './Home/Landing/Hero';
 
 export default function Home() {
   const router = useRouter();

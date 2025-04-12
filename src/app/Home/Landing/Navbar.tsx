@@ -6,12 +6,14 @@ import { ShimmerButton } from '@/ui/shimmer-button';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import Script from 'next/script';
 import { MenuOverlay } from '@/ui/menu-overlay';
+import MobileMenu from '@/ui/mobile-menu';
 import Link from 'next/link';
 
 export default function Navbar() {
   const [isClient, setIsClient] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [menuTriggerPosition, setMenuTriggerPosition] = useState<{ x: number; y: number } | null>(null);
+  const [isMobile, setIsMobile] = useState(false);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const menuIconRef = useRef<HTMLImageElement>(null);
   const { scrollY } = useScroll();
@@ -37,6 +39,18 @@ export default function Navbar() {
   
   useEffect(() => {
     setIsClient(true);
+    
+    // Check if mobile device
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
+    return () => {
+      window.removeEventListener('resize', checkMobile);
+    };
   }, []);
 
   const handleMenuToggle = () => {
@@ -97,12 +111,23 @@ export default function Navbar() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       
-      {/* Menu Overlay */}
-      <MenuOverlay 
-        isOpen={isMenuOpen} 
-        onClose={() => setIsMenuOpen(false)} 
-        triggerPosition={menuTriggerPosition}
-      />
+      {/* Menu Overlay - Desktop only */}
+      {!isMobile && (
+        <MenuOverlay 
+          isOpen={isMenuOpen} 
+          onClose={() => setIsMenuOpen(false)} 
+          triggerPosition={menuTriggerPosition}
+        />
+      )}
+      
+      {/* Mobile Menu - Mobile only */}
+      {isMobile && (
+        <MobileMenu
+          isOpen={isMenuOpen}
+          onClose={() => setIsMenuOpen(false)}
+          triggerPosition={menuTriggerPosition}
+        />
+      )}
       
       <motion.nav 
         className="fixed top-0 left-0 right-0 z-50 py-6 flex items-center justify-center font-dm-sans"
