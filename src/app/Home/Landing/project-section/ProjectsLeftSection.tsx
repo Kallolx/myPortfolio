@@ -101,6 +101,7 @@ export default function ProjectsLeftSection({
                 background="#090245"
                 borderRadius="9999px"
                 className="flex items-center gap-2 whitespace-nowrap"
+                href="https://kallolsfolio2.vercel.app/projects"
               >
                 See All Projects
               </ShimmerButton>
