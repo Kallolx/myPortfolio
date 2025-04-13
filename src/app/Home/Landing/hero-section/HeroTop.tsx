@@ -20,10 +20,6 @@ export default function HeroTop() {
         </div>
       </div>
       
-      {/* About Button - Positioned between Image and About sections */}
-      <div className="absolute md:top-16 lg:top-60 left-1/2 md:left-[61%] transform -translate-x-1/2 md:translate-x-[-50%] z-30">
-        <AboutButton />
-      </div>
       
       {/* Right Section - About (40%) */}
       <div className="w-full md:w-[40%] h-[400px] flex items-center justify-center">
