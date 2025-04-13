@@ -20,6 +20,7 @@
   --shimmer-duration: 3s;
   --animate-shimmer-slide: shimmer-slide var(--shimmer-duration) ease-in-out infinite alternate;
   --animate-spin-around: spin-around calc(var(--shimmer-duration) * 2) infinite linear;
+  --animate-move: move 5s linear infinite;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -67,6 +68,15 @@ body {
   }
 }
 
+@keyframes move {
+  0% {
+    transform: translateX(-200px);
+  }
+  100% {
+    transform: translateX(200px);
+  }
+}
+
 /* Animation utility classes */
 .animate-shimmer-slide {
   animation: var(--animate-shimmer-slide);
@@ -78,6 +88,10 @@ body {
 
 .animate-rainbow {
   animation: rainbow 2s linear infinite;
+}
+
+.animate-move {
+  animation: move 3s linear infinite;
 }
 
 /* Font utility classes */

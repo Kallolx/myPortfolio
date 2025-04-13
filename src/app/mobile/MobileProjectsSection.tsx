@@ -1,38 +1,93 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import AuroraText from '../../ui/AuroraText';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ShimmerButton } from '@/ui/shimmer-button';
+import { FiExternalLink } from 'react-icons/fi';
 
 export default function MobileProjectsSection() {
   const [activeProject, setActiveProject] = useState(0);
   const [direction, setDirection] = useState(0);
+  const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
+  const autoRotateTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   
-  // Auto-rotate through projects
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setDirection(1);
-      setActiveProject((prev) => (prev + 1) % 3);
-    }, 4000);
+  // Function to start auto-rotation
+  const startAutoRotation = () => {
+    if (autoRotateTimeoutRef.current) {
+      clearTimeout(autoRotateTimeoutRef.current);
+    }
     
-    return () => clearInterval(interval);
+    autoRotateTimeoutRef.current = setTimeout(() => {
+      setDirection(1);
+      setActiveProject((prev) => (prev + 1) % projects.length);
+      startAutoRotation(); // Restart the timeout after changing
+    }, 10000); // 10 seconds
+  };
+  
+  // Start auto-rotation on mount
+  useEffect(() => {
+    startAutoRotation();
+    
+    // Clean up on unmount
+    return () => {
+      if (autoRotateTimeoutRef.current) {
+        clearTimeout(autoRotateTimeoutRef.current);
+      }
+    };
   }, []);
+  
+  // Custom setter for activeProject that restarts the timeout
+  const handleSetActiveProject = (index: number) => {
+    setDirection(index > activeProject ? 1 : -1);
+    setActiveProject(index);
+    
+    // Reset the auto-rotation timeout when user interacts
+    if (autoRotateTimeoutRef.current) {
+      clearTimeout(autoRotateTimeoutRef.current);
+    }
+    startAutoRotation();
+  };
+
+  // Set up video refs array
+  useEffect(() => {
+    videoRefs.current = videoRefs.current.slice(0, projects.length);
+  }, []);
+  
+  // Control video playback based on active project
+  useEffect(() => {
+    // Pause all videos first
+    videoRefs.current.forEach((video, index) => {
+      if (video) {
+        if (index === activeProject) {
+          video.play().catch(e => console.log("Video play error:", e));
+        } else {
+          video.pause();
+        }
+      }
+    });
+  }, [activeProject]);
 
   const projects = [
     {
       id: 1,
-      name: 'HishabX - A well balanced and finely decorated landing page ',
-      image: '/icons/1.png'
+      name: 'HishabX - A well balanced and finely decorated landing page',
+      video: '/videos/vid2.mp4',
+      url: 'https://hisabx.vercel.app',
+      image: undefined
     },
     {
       id: 2,
       name: 'BrandBangla - A well balanced and finely decorated landing page',
-      image: '/icons/1.png'
+      video: '/videos/vid3.mp4',
+      url: 'https://brandbangladesh.shop/',
+      image: undefined
     },
     {
       id: 3,
       name: 'PortfolioX - A well balanced and finely decorated landing page',
-      image: '/icons/1.png'
+      video: '/videos/vid4.mp4',
+      url: 'https://gmc-point.com',
+      image: undefined
     }
   ];
 
@@ -43,14 +98,17 @@ export default function MobileProjectsSection() {
     if (Math.abs(velocity.x) > 0.5 || Math.abs(swipe) > 50) {
       if (swipe < 0) {
         // Swiped left, go to next project
-        setDirection(1);
-        setActiveProject((prev) => (prev + 1) % projects.length);
+        handleSetActiveProject((activeProject + 1) % projects.length);
       } else {
         // Swiped right, go to previous project
-        setDirection(-1);
-        setActiveProject((prev) => (prev - 1 + projects.length) % projects.length);
+        handleSetActiveProject((activeProject - 1 + projects.length) % projects.length);
       }
     }
+  };
+
+  const handleLinkClick = (e: React.MouseEvent, url: string) => {
+    e.stopPropagation(); // Prevent card selection from triggering
+    window.open(url, "_blank", "noopener,noreferrer");
   };
 
   // Variants for slide animations
@@ -75,10 +133,10 @@ export default function MobileProjectsSection() {
         {/* Title Section */}
         <div className="mb-10 text-center">
           <h2 className="text-5xl font-regular -tracking-[0.06em] mb-2">
-            <AuroraText>Self Awarded</AuroraText>
+            <AuroraText>Projects</AuroraText>
           </h2>
           <h3 className="text-5xl font-regular -tracking-[0.06em] text-gray-500">
-            Projects Gallery
+            Gallery
           </h3>
         </div>
         
@@ -106,10 +164,50 @@ export default function MobileProjectsSection() {
                   }}
                   className="absolute top-0 left-0 w-full h-full rounded-xl shadow-lg overflow-hidden"
                   style={{
-                    backgroundColor: '#1f1253',
                     border: '1px solid #6d5acd30',
                   }}
-                />
+                >
+                  {/* Video Container */}
+                  <div className="relative w-full h-full bg-black">
+                    {projects[activeProject].video ? (
+                      <video
+                        ref={el => {
+                          videoRefs.current[activeProject] = el;
+                        }}
+                        src={projects[activeProject].video}
+                        className="absolute inset-0 w-full h-full object-cover"
+                        muted
+                        loop
+                        playsInline
+                        preload="auto"
+                      />
+                    ) : projects[activeProject].image && (
+                      <img
+                        src={projects[activeProject].image}
+                        alt={projects[activeProject].name}
+                        className="absolute inset-0 w-full h-full object-cover"
+                      />
+                    )}
+                    
+                    {/* Link icon with gradient circle background */}
+                    <motion.div 
+                      className="absolute bottom-4 right-4 cursor-pointer"
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={(e) => handleLinkClick(e, projects[activeProject].url)}
+                    >
+                      <div 
+                        className="flex items-center justify-center w-12 h-12 rounded-full p-3 shadow-lg"
+                        style={{
+                          background: "linear-gradient(135deg, #4a00e0, #8e2de2)",
+                          boxShadow: "0 4px 20px rgba(74, 0, 224, 0.3)"
+                        }}
+                      >
+                        <FiExternalLink className="w-full h-full text-white" strokeWidth={2.5} />
+                      </div>
+                    </motion.div>
+                  </div>
+                </motion.div>
               </AnimatePresence>
             </div>
           </motion.div>
@@ -121,10 +219,7 @@ export default function MobileProjectsSection() {
             <div 
               key={project.id}
               className="flex items-center cursor-pointer group"
-              onClick={() => {
-                setDirection(index > activeProject ? 1 : -1);
-                setActiveProject(index);
-              }}
+              onClick={() => handleSetActiveProject(index)}
             >
               <div className="mr-6">
                 <div className={`
@@ -164,6 +259,7 @@ export default function MobileProjectsSection() {
             background="#090245"
             borderRadius="9999px"
             className="flex items-center gap-2 whitespace-nowrap"
+            href="https://kallolsfolio2.vercel.app/projects"
           >
             See All Projects
           </ShimmerButton>

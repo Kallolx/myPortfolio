@@ -3,6 +3,8 @@ import Navbar from './Landing/Navbar';
 import Hero from './Landing/Hero';
 import SplineModel from './Landing/SplineModel';
 import ProjectsSection from './Landing/ProjectsSection';
+import GetSection from './Landing/GetSection';
+import ContactSection from './Landing/ContactSection';
 
 export default function HomePage() {
   return (
@@ -46,6 +48,8 @@ export default function HomePage() {
             <Hero />
            {/* <SplineModel /> */}
             <ProjectsSection />
+            <GetSection />
+            <ContactSection />
           </main>
         </div>
       </div>

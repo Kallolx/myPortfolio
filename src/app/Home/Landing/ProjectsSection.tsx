@@ -1,35 +1,62 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import ProjectsLeftSection from './project-section/ProjectsLeftSection';
 import ProjectsRightSection from './project-section/ProjectsRightSection';
 
 export default function ProjectsSection() {
   const [activeProject, setActiveProject] = useState(0);
+  const autoRotateTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   
-  // Auto-rotate through projects
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setActiveProject((prev) => (prev + 1) % 3);
-    }, 4000);
+  // Function to start auto-rotation
+  const startAutoRotation = () => {
+    if (autoRotateTimeoutRef.current) {
+      clearTimeout(autoRotateTimeoutRef.current);
+    }
     
-    return () => clearInterval(interval);
+    autoRotateTimeoutRef.current = setTimeout(() => {
+      setActiveProject((prev) => (prev + 1) % 3);
+      startAutoRotation(); // Restart the timeout after changing
+    }, 10000); // 10 seconds
+  };
+  
+  // Start auto-rotation on mount
+  useEffect(() => {
+    startAutoRotation();
+    
+    // Clean up on unmount
+    return () => {
+      if (autoRotateTimeoutRef.current) {
+        clearTimeout(autoRotateTimeoutRef.current);
+      }
+    };
   }, []);
+  
+  // Custom setter for activeProject that restarts the timeout
+  const handleSetActiveProject = (index: number) => {
+    setActiveProject(index);
+    
+    // Reset the auto-rotation timeout when user interacts
+    if (autoRotateTimeoutRef.current) {
+      clearTimeout(autoRotateTimeoutRef.current);
+    }
+    startAutoRotation();
+  };
 
   const projects = [
     {
       id: 1,
       name: 'HishabX - A well balanced and finely decorated landing page ',
-      image: '/images/project-placeholder.jpg',
+      video: '/videos/vid2.mp4',
     },
     {
       id: 2,
       name: 'BrandBangla - A well balanced and finely decorated landing page',
-      image: '/images/project-placeholder.jpg',
+      video: '/videos/vid3.mp4',
     },
     {
       id: 3,
       name: 'PortfolioX - A well balanced and finely decorated landing page',
-      image: '/images/project-placeholder.jpg',
+      video: '/videos/vid4.mp4',
     }
   ];
 
@@ -41,7 +68,7 @@ export default function ProjectsSection() {
           <ProjectsLeftSection
             projects={projects}
             activeProject={activeProject}
-            setActiveProject={setActiveProject}
+            setActiveProject={handleSetActiveProject}
           /> 
           <ProjectsRightSection
             projects={projects}
