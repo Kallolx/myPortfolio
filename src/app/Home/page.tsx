@@ -1,7 +1,6 @@
 import React from 'react';
 import Navbar from './Landing/Navbar';
 import Hero from './Landing/Hero';
-import SplineModel from './Landing/SplineModel';
 import ProjectsSection from './Landing/ProjectsSection';
 import GetSection from './Landing/GetSection';
 import ContactSection from './Landing/ContactSection';
@@ -17,7 +16,7 @@ export default function HomePage() {
           left: 0,
           width: '100%',
           height: '100%',
-          backgroundImage: "url('/images/background.jpg')",
+          backgroundImage: "url('/images/background.webp')",
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat',
@@ -46,7 +45,6 @@ export default function HomePage() {
           <Navbar />
           <main className="flex-1 flex flex-col">
             <Hero />
-            <SplineModel />
             <ProjectsSection />
             <GetSection />
             <ContactSection />

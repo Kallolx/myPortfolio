@@ -36,7 +36,7 @@ export default function MobileHomePage() {
           left: 0,
           width: '100%',
           height: '100%',
-          backgroundImage: "url('/images/background.jpg')",
+          backgroundImage: "url('/images/background.webp')",
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat',

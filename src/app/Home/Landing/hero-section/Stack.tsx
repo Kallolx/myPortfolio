@@ -45,6 +45,7 @@ interface CardData {
   id: number;
   img: string;
   url?: string;
+  randomRotate?: number; // 👈 add this
 }
 
 interface StackProps {
@@ -62,24 +63,44 @@ export default function Stack({
   cardDimensions = { width: 208, height: 208 },
   cardsData = [],
   animationConfig = { stiffness: 260, damping: 20 },
-  sendToBackOnClick = false
+  sendToBackOnClick = false,
 }: StackProps) {
   // Use client-side only state
   const [cards, setCards] = useState<CardData[]>([]);
   const [isClient, setIsClient] = useState(false);
-  
+
   // Only initialize after component mounts on client
   useEffect(() => {
     setIsClient(true);
-    setCards(cardsData.length
+
+    const baseCards = cardsData.length
       ? cardsData
       : [
-        { id: 1, img: "https://images.unsplash.com/photo-1480074568708-e7b720bb3f09?q=80&w=500&auto=format" },
-        { id: 2, img: "https://images.unsplash.com/photo-1449844908441-8829872d2607?q=80&w=500&auto=format" },
-        { id: 3, img: "https://images.unsplash.com/photo-1452626212852-811d58933cae?q=80&w=500&auto=format" },
-        { id: 4, img: "https://images.unsplash.com/photo-1572120360610-d971b9d7767c?q=80&w=500&auto=format" }
-      ]);
-  }, [cardsData]);
+          {
+            id: 1,
+            img: "https://images.unsplash.com/photo-1480074568708-e7b720bb3f09?q=80&w=500&auto=format",
+          },
+          {
+            id: 2,
+            img: "https://images.unsplash.com/photo-1449844908441-8829872d2607?q=80&w=500&auto=format",
+          },
+          {
+            id: 3,
+            img: "https://images.unsplash.com/photo-1452626212852-811d58933cae?q=80&w=500&auto=format",
+          },
+          {
+            id: 4,
+            img: "https://images.unsplash.com/photo-1572120360610-d971b9d7767c?q=80&w=500&auto=format",
+          },
+        ];
+
+    setCards(
+      baseCards.map((card) => ({
+        ...card,
+        randomRotate: randomRotation ? Math.random() * 10 - 5 : 0,
+      }))
+    );
+  }, [cardsData, randomRotation]);
 
   const sendToBack = (id: number) => {
     setCards((prev) => {
@@ -90,17 +111,17 @@ export default function Stack({
       return newCards;
     });
   };
-  
+
   const handleCardClick = (card: CardData) => {
     if (card.url) {
-      window.open(card.url, '_blank', 'noopener,noreferrer');
+      window.open(card.url, "_blank", "noopener,noreferrer");
     }
   };
 
   // Don't render animations until client-side
   if (!isClient) {
     return (
-      <div 
+      <div
         className="relative"
         style={{
           width: cardDimensions.width,
@@ -127,9 +148,7 @@ export default function Stack({
       }}
     >
       {cards.map((card, index) => {
-        const randomRotate = randomRotation
-          ? Math.random() * 10 - 5 // Random degree between -5 and 5
-          : 0;
+        const randomRotate = card.randomRotate || 0;
 
         return (
           <CardRotate
@@ -146,21 +165,13 @@ export default function Stack({
                   handleCardClick(card);
                 }
               }}
-              animate={{
+              style={{
                 rotateZ: (cards.length - index - 1) * 4 + randomRotate,
                 scale: 1 + index * 0.06 - cards.length * 0.06,
                 transformOrigin: "90% 90%",
-              }}
-              initial={false}
-              transition={{
-                type: "spring",
-                stiffness: animationConfig.stiffness,
-                damping: animationConfig.damping,
-              }}
-              style={{
                 width: cardDimensions.width,
                 height: cardDimensions.height,
-                cursor: card.url ? 'pointer' : 'grab'
+                cursor: card.url ? "pointer" : "grab",
               }}
             >
               <div className="relative w-full h-full">
@@ -171,10 +182,34 @@ export default function Stack({
                 />
                 {card.url && (
                   <div className="absolute bottom-2 right-2 w-6 h-6 rounded-full bg-blue-500 flex items-center justify-center">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                      <path d="M15 3h6v6" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                      <path d="M10 14L21 3" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <svg
+                      width="12"
+                      height="12"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"
+                        stroke="white"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                      <path
+                        d="M15 3h6v6"
+                        stroke="white"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                      <path
+                        d="M10 14L21 3"
+                        stroke="white"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
                     </svg>
                   </div>
                 )}
@@ -185,4 +220,4 @@ export default function Stack({
       })}
     </div>
   );
-} 
+}

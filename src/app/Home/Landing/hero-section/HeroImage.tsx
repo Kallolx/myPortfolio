@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 
 export default function HeroImage() {
   // Use an error handler to handle missing image
-  const [imgSrc, setImgSrc] = useState('/images/myimage.png');
+  const [imgSrc, setImgSrc] = useState('/kamrulhasan.webp');
   const [isClient, setIsClient] = useState(false);
   
   useEffect(() => {

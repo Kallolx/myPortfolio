@@ -8,27 +8,27 @@ import Stack from '../Home/Landing/hero-section/Stack';
 const projectImages = [
   { 
     id: 1, 
-    img: "/images/brands/5.jpg",
+    img: "/images/brands/5.webp",
     url: "https://example.com/brand1"
   },
   { 
     id: 2, 
-    img: "/images/brands/1.jpg",
+    img: "/images/brands/1.webp",
     url: "https://example.com/brand2" 
   },
   { 
     id: 3, 
-    img: "/images/brands/3.jpg",
+    img: "/images/brands/3.webp",
     url: "https://example.com/brand3"
   },
   { 
     id: 4, 
-    img: "/images/brands/4.jpg",
+    img: "/images/brands/4.webp",
     url: "https://example.com/brand4"
   },
   { 
     id: 5, 
-    img: "/images/brands/2.jpg",
+    img: "/images/brands/2.webp",
     url: "https://example.com/brand5"
   }
 ];
@@ -83,7 +83,7 @@ export default function MobileCollaborationBanner() {
       {/* Animated Background Image with effects */}
       <div className="absolute inset-0 z-0 overflow-hidden">
         <Image 
-          src="/images/bannerbg.jpg" 
+          src="/images/background.webp" 
           alt="Collaboration Background" 
           fill 
           style={{ objectFit: 'cover' }}

@@ -106,7 +106,7 @@ export default function TestimonialBanner() {
               <div className="flex -space-x-4">
                 <div className="relative w-14 h-14 rounded-full overflow-hidden z-30">
                   <Image 
-                    src="/images/user/user1.png" 
+                    src="/images/user/user1.webp" 
                     alt="User 1" 
                     fill 
                     style={{ objectFit: 'cover' }}
@@ -114,7 +114,7 @@ export default function TestimonialBanner() {
                 </div>
                 <div className="relative w-14 h-14 rounded-full overflow-hidden z-20">
                   <Image 
-                    src="/images/user/user2.png" 
+                    src="/images/user/user2.webp" 
                     alt="User 2" 
                     fill 
                     style={{ objectFit: 'cover' }}
@@ -122,7 +122,7 @@ export default function TestimonialBanner() {
                 </div>
                 <div className="relative w-14 h-14 rounded-full overflow-hidden z-10">
                   <Image 
-                    src="/images/user/user3.png" 
+                    src="/images/user/user3.webp" 
                     alt="User 3" 
                     fill 
                     style={{ objectFit: 'cover' }}
@@ -154,7 +154,7 @@ export default function TestimonialBanner() {
           
           {/* Right section with interactive Globe component */}
           <div className="w-full md:w-1/2 flex items-center justify-end overflow-visible">
-            <div className="relative h-[150px] w-[150px] md:h-[180px] md:w-[200px] -mr-10">
+            <div className="relative h-[150px] w-[150px] md:h-[180px] md:w-[200px] -mr-42">
               <Globe className="w-full h-full" />
             </div>
           </div>

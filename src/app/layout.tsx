@@ -28,7 +28,7 @@ export const metadata: Metadata = {
     siteName: 'Kallolsfolio',
     images: [
       {
-        url: '/og-image.jpg',
+        url: '/kamrulhasan.webp',
         width: 1200,
         height: 630,
         alt: 'Kallolsfolio - Connect with top tech talent'

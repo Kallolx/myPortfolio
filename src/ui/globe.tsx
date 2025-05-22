@@ -1,12 +1,8 @@
 "use client";
 
+import { useEffect, useRef, useMemo } from "react";
 import createGlobe, { COBEOptions } from "cobe";
-import { useMotionValue, useSpring } from "framer-motion";
-import { useEffect, useRef } from "react";
-
 import { cn } from "@/lib/utils";
-
-const MOVEMENT_DAMPING = 1400;
 
 const GLOBE_CONFIG: COBEOptions = {
   width: 400,
@@ -36,42 +32,21 @@ const GLOBE_CONFIG: COBEOptions = {
   ],
 };
 
-export function Globe({
+export const Globe = ({
   className,
   config = GLOBE_CONFIG,
 }: {
   className?: string;
   config?: COBEOptions;
-}) {
-  let phi = config.phi || 0;
-  let width = 0;
+}) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const pointerInteracting = useRef<number | null>(null);
-  const pointerInteractionMovement = useRef(0);
-
-  const r = useMotionValue(0);
-  const rs = useSpring(r, {
-    mass: 1,
-    damping: 30,
-    stiffness: 100,
-  });
-
-  const updatePointerInteraction = (value: number | null) => {
-    pointerInteracting.current = value;
-    if (canvasRef.current) {
-      canvasRef.current.style.cursor = value !== null ? "grabbing" : "grab";
-    }
-  };
-
-  const updateMovement = (clientX: number) => {
-    if (pointerInteracting.current !== null) {
-      const delta = clientX - pointerInteracting.current;
-      pointerInteractionMovement.current = delta;
-      r.set(r.get() + delta / MOVEMENT_DAMPING);
-    }
-  };
+  const phi = config.phi || 0;
+  const memoizedConfig = useMemo(() => config, [config]);
 
   useEffect(() => {
+    let width = 0;
+    let lastRender = 0;
+
     const onResize = () => {
       if (canvasRef.current) {
         width = canvasRef.current.offsetWidth;
@@ -82,27 +57,35 @@ export function Globe({
     onResize();
 
     const globe = createGlobe(canvasRef.current!, {
-      ...config,
-      width: width * 2,
-      height: width * 2,
+      ...memoizedConfig,
+      width: width,
+      height: width,
+      devicePixelRatio: 1,
       onRender: (state) => {
-        if (!pointerInteracting.current) phi += 0.003;
-        state.phi = phi + rs.get();
-        state.width = width * 2;
-        state.height = width * 2;
+        const now = Date.now();
+        if (now - lastRender < 100) return; // Throttle rendering to every 100ms
+        lastRender = now;
+
+        state.phi = phi;
+        state.width = width;
+        state.height = width;
       },
     });
 
-    // Set opacity to 1 immediately to make it visible faster
     if (canvasRef.current) {
       canvasRef.current.style.opacity = "1";
     }
-    
+
     return () => {
       globe.destroy();
       window.removeEventListener("resize", onResize);
     };
-  }, [rs, config]);
+  }, [memoizedConfig, phi]);
+
+  // Optional: skip rendering on very small devices
+  if (typeof window !== "undefined" && window.innerWidth < 480) {
+    return null;
+  }
 
   return (
     <div
@@ -117,18 +100,8 @@ export function Globe({
             "w-[300%] h-[300%] max-w-none opacity-0 transition-opacity duration-300 -translate-x-[25%] translate-y-[10%]"
           )}
           ref={canvasRef}
-          onPointerDown={(e) => {
-            pointerInteracting.current = e.clientX;
-            updatePointerInteraction(e.clientX);
-          }}
-          onPointerUp={() => updatePointerInteraction(null)}
-          onPointerOut={() => updatePointerInteraction(null)}
-          onMouseMove={(e) => updateMovement(e.clientX)}
-          onTouchMove={(e) =>
-            e.touches[0] && updateMovement(e.touches[0].clientX)
-          }
         />
       </div>
     </div>
   );
-}
+};

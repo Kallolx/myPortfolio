@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 
 export default function MobileHeroImage() {
   // Use an error handler to handle missing image
-  const [imgSrc, setImgSrc] = useState('/images/myimage.png');
+  const [imgSrc, setImgSrc] = useState('/kamrulhasan.webp');
   const [isClient, setIsClient] = useState(false);
   
   useEffect(() => {
@@ -56,9 +56,6 @@ export default function MobileHeroImage() {
                 objectPosition: 'center'
               }}
               priority
-              onError={() => {
-                setImgSrc('https://via.placeholder.com/280x350?text=Your+Image+Here');
-              }}
             />
           </div>
         </motion.div>
